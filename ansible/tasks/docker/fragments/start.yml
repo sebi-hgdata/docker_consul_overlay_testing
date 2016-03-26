@@ -1,0 +1,18 @@
+- name: 'start container'
+  docker: 
+    image: "{{ container.image }}:{{ container.container_config.image_tag }}"
+    ports: "{{ container.container_config.ports | default([]) }}"
+    dns: "{{ container.container_config.dns | default([]) }}"
+    name: "{{ container.container_config.name }}"    
+    tty: "{{ container.container_config.tty | default(False)}}"
+    privileged: "{{ container.container_config.privileged | default(False) }}"
+    volumes: "{{ container.container_config.volumes | default([]) }}"
+    net: "{{ container.container_config.net | default(network_name) }}"
+    state: "{{containerState | default('started')}}"     
+    env:   "{{ container.container_config.envs | default({}) }}"
+    restart_policy: "{{ restart_policy | default('unless-stopped') }}"
+    restart_policy_retry: "{{ restart_policy_retry | default(0) }}"
+    volumes_from: "{{ container.container_config.volumes_from | default([]) }}"
+    command: "{{ container.container_config.command | default(None) }}"
+    pull: "missing"    
+  register: start_output

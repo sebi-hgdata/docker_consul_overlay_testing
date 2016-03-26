@@ -1,0 +1,46 @@
+---
+
+- hosts: consul_agents
+  name: 'cleanup docker and consul'  
+  gather_facts: yes
+  strategy: free
+  tasks:     
+    - shell: |
+           docker rm -f $(sudo docker ps -a -q)
+           service consul-agent stop      
+           umount /var/run/docker/netns/*
+           rm /var/run/docker/netns/*
+           rm -rf /var/lib/docker/network
+           rm -rf {{base_deployments_folder}}/consul/data/*
+           service consul-agent start &
+      sudo: yes
+      
+- hosts: consul_servers
+  name: 'cleanup docker and consul'  
+  gather_facts: yes
+  strategy: free
+  tasks:     
+    - shell: |
+           docker rm -f $(sudo docker ps -a -q)
+           service consul-server stop      
+           umount /var/run/docker/netns/*
+           rm /var/run/docker/netns/*
+           rm -rf /var/lib/docker/network
+           rm -rf {{base_deployments_folder}}/consul/data/*
+           service consul-server start &
+      sudo: yes
+                 
+- hosts: consul_servers[0]
+  name: join consul cluster servers
+  gather_facts: no
+  tasks:
+    - shell: "sleep 5; {{consul_home}}/consul join  {{hostvars[groups['consul_servers'][0]]['ansible_'+ethName]['ipv4']['address']}} {{hostvars[groups['consul_servers'][1]]['ansible_'+ethName]['ipv4']['address']}} {{hostvars[groups['consul_servers'][2]]['ansible_'+ethName]['ipv4']['address']}}"
+      sudo: yes   
+- hosts: consul_agents
+  name: start consul agents
+  gather_facts: no
+  sudo: yes
+  strategy: free
+  tasks:     
+    - shell: "sleep 5 && {{consul_home}}/consul join   {{hostvars[groups['consul_servers'][0]]['ansible_'+ethName]['ipv4']['address']}}"
+      when:  server_count==3    

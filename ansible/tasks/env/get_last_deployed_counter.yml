@@ -1,0 +1,10 @@
+- set_fact: consul_key="{{inventory_hostname}}/latest"
+- shell: curl -s -XGET http://localhost:8500/v1/kv/{{consul_key}} |cut -d':' -f5|cut -d'"' -f2|base64 -d
+  register: version_cmd
+- set_fact: deploy_counter="{{version_cmd.stdout|default(0)|int+(counter_offset|int)}}"   
+- consul_kv:
+    key: "{{consul_key}}"
+    state: present  
+    host: localhost
+    value: "{{deploy_counter}}"
+    port: 8500

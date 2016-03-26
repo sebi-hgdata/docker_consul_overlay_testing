@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+# -*- coding: latin-1 -*-
+
+import sys
+sys.path.append('inventories')
+import os
+from collections import OrderedDict
+from custom.inventory import *
+from custom.hosts import *
+
+class MachinesInventory(Inventory): 
+    def __init__(self):
+     all_vars={
+	 'vars': {
+	    'ansible_user':'vagrant' 
+	      }
+	 }
+     super(MachinesInventory, self).__init__(all_vars)
+
+    def get_inventory(self):	
+        hosts=get_hosts()
+        host_definitions=OrderedDict(
+		(
+		    ('s1',hosts[0]),
+		    ('s2',hosts[1]),
+		    ('s3',hosts[2]),
+		    ('a1',hosts[3]),
+		    ('a2',hosts[4])
+		))
+        inventory=super(MachinesInventory, self).get_inventory()
+        inventory['_meta']= {'hostvars':  host_definitions}
+        inventory.update({
+            'consul_servers': {
+                'hosts': ['s1','s2','s3'],
+				'vars': {
+					'server_count': 3
+				 }
+            },
+             'consul_agents': {
+                'hosts': ['a1','a2'],
+				'vars': {
+					'server_count': 3
+				 }
+            }
+	     })
+
+        return inventory
+	
+
+MachinesInventory().printInventory()

@@ -1,0 +1,12 @@
+{	
+	"leave_on_terminate": false,	
+	"skip_leave_on_interrupt": true,
+	"encrypt": "4sdAUBKfKuSHpILzmKJduA==",
+	"dns_config": {
+		"allow_stale": false,
+		"max_stale": "2s",
+		"service_ttl": {
+		      "*": "5s"
+  		}
+	}
+}

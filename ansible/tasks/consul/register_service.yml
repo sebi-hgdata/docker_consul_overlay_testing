@@ -1,0 +1,8 @@
+- name: register service {{service_name}}
+  consul:    
+    service_id: "{{service_name}}"
+    service_name: "{{service_name}}"    
+    service_port: "{{port}}"  
+    state: present
+    interval: 15s
+    script: bash -c "if [ $(sudo   docker inspect -f \{\{.State.Status\}\}  {{base_name}}) != 'running' ]; then echo '{{base_name}} is not running'; exit 100; fi"

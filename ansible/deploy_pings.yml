@@ -1,0 +1,29 @@
+---
+- hosts: all
+  name: 'build image'  
+  gather_facts: no
+  strategy: free
+  tasks:     
+    - synchronize: times=yes compress=no archive=no delete=yes dest="{{base_deployments_folder}}"  recursive=yes  src="{{docker_ping_app}}"
+    - shell: docker build -t overlay_testing/ping:{{image_tag}} {{base_deployments_folder}}/ping
+      sudo: yes
+    - include: tasks/env/get_last_deployed_counter.yml    
+    
+- hosts: s1
+  name: 'create overlay network'  
+  gather_facts: no
+  tasks:     
+   - include: tasks/docker/create_network.yml
+       
+- hosts: all
+  name: 'start pings'
+  max_fail_percentage: 1
+  gather_facts: no
+  strategy: free
+  sudo: yes
+  tasks: 
+     - include: tasks/env/ansible_bug.yml
+     - include: tasks/docker/run.yml
+     - include: tasks/docker/switch_containers.yml 
+     - include: tasks/docker/stop_previous.yml                  
+   

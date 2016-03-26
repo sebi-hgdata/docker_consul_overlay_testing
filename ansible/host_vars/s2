@@ -1,0 +1,16 @@
+
+base_name: "{{inventory_hostname}}"
+api_service: {name: "{{base_name}}", port: '9080'}
+
+services:
+   - "{{api_service}}"
+
+container:
+      image: "overlay_testing/ping"
+      container_config: 
+        name: "{{base_name}}-{{ deploy_counter }}"
+        image_tag: "{{ image_tag }}"
+        net: "{{network_name}}"
+        envs: 
+            PING: "s3"            
+

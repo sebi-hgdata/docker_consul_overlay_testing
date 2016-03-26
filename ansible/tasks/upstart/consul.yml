@@ -1,0 +1,21 @@
+- stat: path="/etc/init/{{base_name}}.conf"
+  register: conf_exists   
+
+- name: setup upstart component scripts
+  template: src=templates/consul_upstart.conf.j2 dest="/etc/init/{{base_name}}.conf"
+  register: template_status
+  
+- shell:  initctl start {{base_name}} &
+  sudo: yes
+  when: not conf_exists.stat.exists 
+    
+- shell:  initctl restart {{base_name}} &
+  sudo: yes  
+  when: conf_exists.stat.exists
+#  when: template_status.changed and template_status.diff is not defined
+#  register: started 
+
+#- shell: "sleep 5 && {{consul_home}}/consul reload"
+  #when: sync_status.changed and started.skipped is defined
+  
+  

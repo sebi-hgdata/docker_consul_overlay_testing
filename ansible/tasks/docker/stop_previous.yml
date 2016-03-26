@@ -1,0 +1,6 @@
+- name: stop previous container {{rename_previous_container_to}}
+  command: docker kill {{rename_previous_container_to}}
+  sudo: yes
+  register: stop_cmd
+  when: deploy_counter != counter_offset
+  failed_when: "stop_cmd.rc!=0 and 'No such' not in stop_cmd.stderr"

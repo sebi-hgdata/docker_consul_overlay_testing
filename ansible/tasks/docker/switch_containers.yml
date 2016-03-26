@@ -1,0 +1,13 @@
+- name: rename container {{base_name}} to {{rename_previous_container_to}}
+  command: docker rename {{base_name}} {{rename_previous_container_to}}
+  sudo: yes   
+  when: deploy_counter != counter_offset
+  register: rename_cmd
+  failed_when: "rename_cmd.rc!=0 and 'No such' not in rename_cmd.stderr"
+  
+- name: rename container {{container['container_config']['name']}} to {{base_name}}
+  command: docker rename {{container['container_config']['name']}} {{base_name}}
+  sudo: yes
+- include: tasks/consul/register_service.yml port={{item.port}} service_name="{{item.name}}"
+  with_items: "{{services}}"
+  

@@ -1,0 +1,5 @@
+- include: tasks/docker/login.yml
+  when: docker_build != 'true' 
+- include: fragments/start.yml  
+#- include: tasks/docker/logout.yml
+#  when: docker_build != 'true' 

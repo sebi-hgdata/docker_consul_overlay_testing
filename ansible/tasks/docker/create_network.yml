@@ -1,0 +1,5 @@
+- name: "create network {{name|default(network_name) }}"
+  shell: docker network create --driver {{driver|default('overlay')}} {{name| default(network_name)}}
+  sudo: yes 
+  register: create_command_result
+  failed_when: "create_command_result.rc!=0 and 'already exists' not in create_command_result.stderr"

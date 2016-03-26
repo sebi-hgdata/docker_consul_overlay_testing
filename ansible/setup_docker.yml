@@ -1,0 +1,30 @@
+- hosts: all
+  name: gather facts
+  max_fail_percentage: 1
+  gather_facts: yes
+  strategy: free
+  sudo: yes  
+  tasks:   
+  - apt: name=apt-transport-https state=latest update_cache=yes
+  - apt: name=python-setuptools,software-properties-common state=latest  
+  - shell: easy_install -U pip
+  - pip: name=pip version=7.1.2
+  - pip: name=python-consul
+  - pip: name=docker-py
+  - shell: |
+                sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D 
+                sudo bash -c "echo \"deb https://apt.dockerproject.org/repo ubuntu-trusty main\" > /etc/apt/sources.list.d/docker.list" 
+                sudo apt-get update            
+
+    
+  - apt: name=docker-engine state=latest 
+      #start on (local-filesystems and net-device-up IFACE!=lo)
+  - replace:  dest=/etc/init/docker.conf regexp="start on (.*)?" replace="start on (started consul-server or started consul-agent)" backup=no
+    notify: 
+      - restart docker
+      #stop on runlevel [!2345]
+  - replace:  dest=/etc/init/docker.conf regexp="stop on (.*)?" replace="stop on (stopping consul-server or stopping consul-agent)" backup=no
+  
+  - replace:  dest=/etc/default/docker regexp="#?DOCKER_OPTS(.*)?" replace='DOCKER_OPTS="--userland-proxy=false --cluster-advertise={{ethName}}:2375 --cluster-store consul://localhost:8500  --bip={{docker0_bip}}/16 --dns 8.8.8.8 --dns 8.8.4.4 -s overlay"' backup=no
+  - name: restart docker
+    command: service docker restart

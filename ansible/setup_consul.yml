@@ -1,0 +1,52 @@
+- hosts: consul_servers:consul_agents
+  name: gather facts
+  max_fail_percentage: 1
+  gather_facts: yes
+  strategy: free
+  tasks:   
+  - apt: name=unzip state=latest update_cache=yes
+    sudo: yes
+  - include: tasks/env/ansible_bug.yml
+  - file: path="{{consul_home}}/data" state=directory
+  - file: path="{{consul_home}}/web_ui" state=directory    
+  - file: path="{{consul_home}}/config" state=directory    
+   
+  - unarchive: copy=no src="https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_linux_amd64.zip" dest="{{consul_home}}"
+  - synchronize: times=yes compress=no archive=no delete=yes dest="{{consul_home}}/config"  recursive=yes  src="files/consul/config/"
+    register: sync_status      
+     
+- hosts: consul_servers
+  name: bootstrap consul cluster servers
+  gather_facts: no
+  sudo: yes
+  strategy: free
+  tasks:     
+    - name: setup upstart scripts
+      include: tasks/upstart/consul.yml      
+      sudo: yes 
+      vars: 
+        options: "agent -config-dir={{consul_home}}/config/server -data-dir={{consul_home}}/data -bootstrap-expect={{server_count}} -retry-interval=5s -node={{inventory_hostname}} -client=127.0.0.1 -bind={{hostvars[inventory_hostname]['ansible_'+ethName]['ipv4']['address']}}"
+        base_name: 'consul-server'
+      
+- hosts: consul_servers[0]
+  name: join consul cluster servers
+  gather_facts: no
+  tasks:
+    - shell: "sleep 10; {{consul_home}}/consul join  {{hostvars[groups['consul_servers'][0]]['ansible_'+ethName]['ipv4']['address']}} {{hostvars[groups['consul_servers'][1]]['ansible_'+ethName]['ipv4']['address']}} {{hostvars[groups['consul_servers'][2]]['ansible_'+ethName]['ipv4']['address']}}"
+      sudo: yes
+      when:  server_count==3
+     
+- hosts: consul_agents
+  name: start consul agents
+  gather_facts: no
+  sudo: yes
+  strategy: free
+  tasks:   
+    - name: setup upstart scripts
+      include: tasks/upstart/consul.yml      
+      vars: 
+        base_name: 'consul-agent'
+        options: "agent -config-dir={{consul_home}}/config/agent -data-dir={{consul_home}}/data -node={{inventory_hostname}} -client=127.0.0.1 -retry-interval=5s -bind={{hostvars[inventory_hostname]['ansible_'+ethName]['ipv4']['address']}}"
+      
+    - shell: "sleep 5 && {{consul_home}}/consul join   {{hostvars[groups['consul_servers'][0]]['ansible_'+ethName]['ipv4']['address']}}"
+      when:  server_count==3

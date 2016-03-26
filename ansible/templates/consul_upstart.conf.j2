@@ -1,0 +1,46 @@
+description "manage {{base_name}} "
+
+description "manage {{base_name}}"
+
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on runlevel [!12345]
+respawn
+respawn limit 10 10
+
+console log
+
+# This is to avoid Upstart re-spawning the process upon `consul leave`
+normal exit 0 INT
+
+# stop consul will not mark node as failed but left
+kill signal INT
+
+setuid {{ansible_user}}
+setgid {{ansible_user}}
+
+pre-start script
+      set -e
+      while nc -z {{hostvars[inventory_hostname]['ansible_'+ethName]['ipv4']['address']}} 8300; do echo 'wait till port 8300 is free'; sleep 1; done   
+end script
+
+script
+  # Make sure to use all our CPUs, because Consul can block a scheduler thread
+  export GOMAXPROCS=`nproc`
+  {{consul_home}}/consul {{options}}
+end script
+
+post-start script
+   echo "start checking if we have a cluster leader by executing a get on an inexistent key"   
+   bash -c "COUNTER=0; \
+   		while ! nc -z localhost 8500; do \
+   			echo 'wait till consul starts listening'; sleep 1; \
+   			let COUNTER=COUNTER+1; \
+			if [  \$COUNTER -gt 10 ]; then \
+				 echo 'consul did not start in 10 secs'; \ 
+				exit 1; \
+			fi \
+		done"       
+   bash -c 'while [[ "$(curl  http://localhost:8500/v1/kv/inexistent_key 2>/dev/null)" ]]; do echo "[UPSTART] wait till cluster has a leader"; sleep 1; done'   
+   echo "cluster should be ok because it returned: $(curl  http://localhost:8500/v1/kv/inexistent_key 2>/dev/null)"
+end script
+

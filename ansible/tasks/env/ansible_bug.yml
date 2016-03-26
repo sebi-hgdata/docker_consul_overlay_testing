@@ -1,0 +1,1 @@
+- set_fact: base_deployments_folder="{{base_deployments_folder}}"
