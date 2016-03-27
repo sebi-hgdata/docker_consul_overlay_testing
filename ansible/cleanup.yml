@@ -26,7 +26,7 @@
            umount /var/run/docker/netns/*
            rm /var/run/docker/netns/*
            rm -rf /var/lib/docker/network
-           rm -rf {{base_deployments_folder}}/consul/data/*
+           rm -rf {{consul_home}}/data/*
            service consul-server start &
       sudo: yes
                  

@@ -6,7 +6,7 @@ base_deployments_folder: "/home/vagrant/overlay_testing"
 consul_home: "{{base_deployments_folder}}/consul" 
 docker0_bip: '172.17.42.1'
 docker_build: 'true' 
-image_name: overlay_testing/ping
+
 docker_images_base: "{{ ansible_base }}/docker"
 docker_ping_app: '{{docker_images_base}}/ping'
 docker_repo_name: '9: image: "issue/ping" '
