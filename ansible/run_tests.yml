@@ -23,7 +23,7 @@
   strategy: free
   tasks:     
     - name: restart machines
-      command: shutdown -r now "kernel update"
+      command: shutdown -r now "restart machine"
       async: 0
       poll: 0
       sudo: yes
@@ -33,15 +33,14 @@
       local_action: wait_for host="{{ansible_ssh_host}}" port=22 delay=10 state=present timeout=100
     - shell: sleep  10
       delegate_to: localhost
-    
-    - shell: docker ps | grep {{base_name}}
-      sudo: yes  
-      
+          
 - hosts: all
   name: 'test'  
   gather_facts: no
   strategy: free
   tasks:         
+    - shell: docker ps | grep {{base_name}}
+      sudo: yes  
     - shell: docker logs {{base_name}} | tail -3
       sudo: yes
       register: logs
