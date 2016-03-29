@@ -20,11 +20,10 @@
   - apt: name=docker-engine state=latest 
       #start on (local-filesystems and net-device-up IFACE!=lo)
   - replace:  dest=/etc/init/docker.conf regexp="start on (.*)?" replace="start on (started consul-server or started consul-agent)" backup=no
-    notify: 
-      - restart docker
+
       #stop on runlevel [!2345]
   - replace:  dest=/etc/init/docker.conf regexp="stop on (.*)?" replace="stop on (stopping consul-server or stopping consul-agent)" backup=no
   
-  - replace:  dest=/etc/default/docker regexp="#?DOCKER_OPTS(.*)?" replace='DOCKER_OPTS="--userland-proxy=false --cluster-advertise={{ethName}}:2375 --cluster-store consul://localhost:8500  --bip={{docker0_bip}}/16 --dns 8.8.8.8 --dns 8.8.4.4 -s overlay"' backup=no
+  - replace:  dest=/etc/default/docker regexp="#?DOCKER_OPTS(.*)?" replace='DOCKER_OPTS="--userland-proxy=false --cluster-advertise={{ethName}}:2375 --cluster-store consul://localhost:8500  --debug --bip={{docker0_bip}}/16 --dns 8.8.8.8 --dns 8.8.4.4 -s overlay"' backup=no
   - name: restart docker
     command: service docker restart

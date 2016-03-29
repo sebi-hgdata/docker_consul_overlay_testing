@@ -25,7 +25,7 @@
       include: tasks/upstart/consul.yml      
       sudo: yes 
       vars: 
-        options: "agent -config-dir={{consul_home}}/config/server -data-dir={{consul_home}}/data -bootstrap-expect={{server_count}} -retry-interval=5s -node={{inventory_hostname}} -client=127.0.0.1 -bind={{hostvars[inventory_hostname]['ansible_'+ethName]['ipv4']['address']}}"
+        options: "agent -config-dir={{consul_home}}/config/server -log-level=debug -data-dir={{consul_home}}/data -bootstrap-expect={{server_count}} -retry-interval=5s -node={{inventory_hostname}} -client=127.0.0.1 -bind={{hostvars[inventory_hostname]['ansible_'+ethName]['ipv4']['address']}}"
         base_name: 'consul-server'
       
 - hosts: consul_servers[0]
@@ -46,7 +46,7 @@
       include: tasks/upstart/consul.yml      
       vars: 
         base_name: 'consul-agent'
-        options: "agent -config-dir={{consul_home}}/config/agent -data-dir={{consul_home}}/data -node={{inventory_hostname}} -client=127.0.0.1 -retry-interval=5s -bind={{hostvars[inventory_hostname]['ansible_'+ethName]['ipv4']['address']}}"
+        options: "agent -config-dir={{consul_home}}/config/agent -log-level=debug -data-dir={{consul_home}}/data -node={{inventory_hostname}} -client=127.0.0.1 -retry-interval=5s -bind={{hostvars[inventory_hostname]['ansible_'+ethName]['ipv4']['address']}}"
       
     - shell: "sleep 5 && {{consul_home}}/consul join   {{hostvars[groups['consul_servers'][0]]['ansible_'+ethName]['ipv4']['address']}}"
       when:  server_count==3
