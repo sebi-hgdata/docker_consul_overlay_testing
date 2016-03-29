@@ -24,8 +24,9 @@ git clone   -b devel https://github.com/sebi-hgdata/ansible.git
 (cd ansible && sudo make install)
 
 git clone https://github.com/sebi-hgdata/docker_consul_overlay_testing.git
+chmod 600 docker_consul_overlay_testing/files/keys/test
 cd docker_consul_overlay_testing/scripts
-chmod 600 ansible/files/keys/test
+
 ./update_kernel.sh
 sleep 10
 ./setup_consul.sh
