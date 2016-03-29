@@ -5,8 +5,8 @@
   strategy: free
   sudo: yes  
   tasks:         
-    - name: Wait for server to restart
-      local_action: wait_for host="{{ansible_ssh_host}}" port=22 delay=10 state=present timeout=100
+    - name: check servers are up
+      local_action: wait_for host="{{ansible_ssh_host}}" port=22 delay=2 state=present timeout=100
         
     - shell: uname -r
       register: kernel_version
@@ -29,5 +29,5 @@
       ignore_errors: true
       when: kernel_version.stdout != '4.3.0-040300-generic'       
     - name: Wait for server to restart
-      local_action: wait_for host="{{ansible_ssh_host}}" port=22 delay=10 state=present timeout=100
+      local_action: wait_for host="{{ansible_ssh_host}}" port=22 delay=2 state=present timeout=100
            
