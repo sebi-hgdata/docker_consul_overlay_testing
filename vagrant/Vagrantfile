@@ -12,19 +12,24 @@ echo  "#{ssh_priv_key}"  > /home/vagrant/.ssh/test
 echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
 
 sudo apt-get update
-sudo apt-get install -qy software-properties-common
+sudo apt-get install -qy software-properties-common make git python-setuptools
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
 sudo apt-add-repository -y ppa:ansible/ansible
 sudo apt-get update	
-sudo apt-get install -y ansible python-setuptools
+sudo apt-get install -y ansible
 
-sudo apt-get install -y git
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+git clone   -b devel https://github.com/sebi-hgdata/ansible.git
+(cd ansible && git submodule update --init --recursive )
+(cd ansible && sudo make install)
+
 git clone https://github.com/sebi-hgdata/docker_consul_overlay_testing.git
 cd docker_consul_overlay_testing/scripts
 ./update_kernel.sh
 sleep 10
 ./setup_consul.sh
 ./setup_docker.sh
+./deploy_pings.sh
 SCRIPT
 
 $scriptAuthKeys = <<SCRIPT
