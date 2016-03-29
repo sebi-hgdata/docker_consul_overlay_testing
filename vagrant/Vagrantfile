@@ -21,7 +21,10 @@ sudo apt-get install -y ansible python-setuptools
 sudo apt-get install -y git
 git clone https://github.com/sebi-hgdata/docker_consul_overlay_testing.git
 cd docker_consul_overlay_testing/scripts
-
+./update_kernel.sh
+sleep 10
+./setup_consul.sh
+./setup_docker.sh
 SCRIPT
 
 $scriptAuthKeys = <<SCRIPT

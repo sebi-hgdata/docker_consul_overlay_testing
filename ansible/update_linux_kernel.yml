@@ -5,6 +5,9 @@
   strategy: free
   sudo: yes  
   tasks:         
+    - name: Wait for server to restart
+      local_action: wait_for host="{{ansible_ssh_host}}" port=22 delay=10 state=present timeout=100
+        
     - shell: uname -r
       register: kernel_version
     - get_url: url="http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.3-wily/linux-headers-4.3.0-040300_4.3.0-040300.201511020949_all.deb"  dest="/tmp/linux-headers-4.3.0-040300_4.3.0-040300.201511020949_all.deb"
@@ -25,4 +28,6 @@
       poll: 0
       ignore_errors: true
       when: kernel_version.stdout != '4.3.0-040300-generic'       
-      
+    - name: Wait for server to restart
+      local_action: wait_for host="{{ansible_ssh_host}}" port=22 delay=10 state=present timeout=100
+           
