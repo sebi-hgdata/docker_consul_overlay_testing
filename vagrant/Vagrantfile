@@ -28,7 +28,8 @@ chmod 600 docker_consul_overlay_testing/ansible/files/keys/test
 cd docker_consul_overlay_testing/scripts
 
 ./update_kernel.sh
-sleep 10
+echo "sleep 25 secs"
+sleep 25
 ./setup_consul.sh
 ./setup_docker.sh
 ./deploy_pings.sh
@@ -36,7 +37,6 @@ SCRIPT
 
 $scriptAuthKeys = <<SCRIPT
 echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
-echo #{ssh_pub_key} >> /root/.ssh/authorized_keys
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -45,21 +45,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s1.vm.hostname = "s1"
     s1.vm.box = "trusty-server"
     s1.vm.network "private_network", ip: "192.168.50.2"
-    s1.vm.provision "shell", inline: $scriptAuthKeys
+    s1.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
     s1.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
   end
   config.vm.define "s2" do |s2|
     s2.vm.hostname = "s2"
     s2.vm.box = "trusty-server"
     s2.vm.network "private_network", ip: "192.168.50.3"
-    s2.vm.provision "shell", inline: $scriptAuthKeys
+    s2.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
     s2.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
   end
    config.vm.define "s3" do |s3|
     s3.vm.hostname = "s3"
     s3.vm.box = "trusty-server"
     s3.vm.network "private_network", ip: "192.168.50.4"
-    s3.vm.provision "shell", inline: $scriptAuthKeys
+    s3.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
     s3.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
   end
   
@@ -67,7 +67,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     a1.vm.hostname = "a1"
     a1.vm.box = "trusty-server"
     a1.vm.network "private_network", ip: "192.168.50.5"
-    a1.vm.provision "shell", inline: $scriptAuthKeys
+    a1.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
     a1.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
   end
   
@@ -75,13 +75,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     a2.vm.hostname = "a2"
     a2.vm.box = "trusty-server"
     a2.vm.network "private_network", ip: "192.168.50.6"
-    a2.vm.provision "shell", inline: $scriptAuthKeys
+    a2.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
     a2.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
   end
   
    config.vm.define "control" do |control|
     control.vm.hostname = "control"
-    control.vm.provision "shell", inline: $script
+    control.vm.provision "shell", inline: $script, privileged: false
     control.vm.box = "trusty-server"
     control.vm.network "private_network", ip: "192.168.50.10"
     control.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
