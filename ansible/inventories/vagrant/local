@@ -30,6 +30,9 @@ class MachinesInventory(Inventory):
         inventory=super(MachinesInventory, self).get_inventory()
         inventory['_meta']= {'hostvars':  host_definitions}
         inventory.update({
+        'other': {
+                'hosts': ['s1','s2','s3','a1','a2']
+            }, 
             'consul_servers': {
                 'hosts': ['s1'],
 				'vars': {
