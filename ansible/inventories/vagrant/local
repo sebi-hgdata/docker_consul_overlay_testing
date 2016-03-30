@@ -22,10 +22,10 @@ class MachinesInventory(Inventory):
         host_definitions=OrderedDict(
 		(
 		    ('s1',hosts[0]),
-		    ('s2',hosts[1]),
-		    ('s3',hosts[2]),
-		    ('a1',hosts[3]),
-		    ('a2',hosts[4])
+		    ('s2',hosts[0]),
+		    ('s3',hosts[0]),
+		    ('a1',hosts[0]),
+		    ('a2',hosts[0])
 		))
         inventory=super(MachinesInventory, self).get_inventory()
         inventory['_meta']= {'hostvars':  host_definitions}
@@ -33,13 +33,13 @@ class MachinesInventory(Inventory):
             'consul_servers': {
                 'hosts': ['s1','s2','s3'],
 				'vars': {
-					'server_count': 3
+					'server_count': 1
 				 }
             },
              'consul_agents': {
                 'hosts': ['a1','a2'],
 				'vars': {
-					'server_count': 3
+					'server_count': 1
 				 }
             }
 	     })

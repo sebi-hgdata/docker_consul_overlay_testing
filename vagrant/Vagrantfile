@@ -26,7 +26,7 @@ git clone   -b devel https://github.com/sebi-hgdata/ansible.git
 git clone https://github.com/sebi-hgdata/docker_consul_overlay_testing.git
 chmod 600 docker_consul_overlay_testing/ansible/files/keys/test
 cd docker_consul_overlay_testing/scripts
-
+git checkout -t origin/one_machine
 ./update_kernel.sh
 echo "sleep 25 secs"
 sleep 25
@@ -48,37 +48,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s1.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
     s1.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
   end
-  config.vm.define "s2" do |s2|
-    s2.vm.hostname = "s2"
-    s2.vm.box = "trusty-server"
-    s2.vm.network "private_network", ip: "192.168.50.3"
-    s2.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
-    s2.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
-  end
-   config.vm.define "s3" do |s3|
-    s3.vm.hostname = "s3"
-    s3.vm.box = "trusty-server"
-    s3.vm.network "private_network", ip: "192.168.50.4"
-    s3.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
-    s3.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
-  end
-  
-   config.vm.define "a1" do |a1|
-    a1.vm.hostname = "a1"
-    a1.vm.box = "trusty-server"
-    a1.vm.network "private_network", ip: "192.168.50.5"
-    a1.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
-    a1.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
-  end
-  
-   config.vm.define "a2" do |a2|
-    a2.vm.hostname = "a2"
-    a2.vm.box = "trusty-server"
-    a2.vm.network "private_network", ip: "192.168.50.6"
-    a2.vm.provision "shell", inline: $scriptAuthKeys, privileged: false
-    a2.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
-  end
-  
+    
    config.vm.define "control" do |control|
     control.vm.hostname = "control"
     control.vm.provision "shell", inline: $script, privileged: false

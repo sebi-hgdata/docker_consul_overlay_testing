@@ -17,7 +17,7 @@
         that:
           - "'Unreachable' not in logs.stdout"
           
-- hosts: s1:a1:a2
+- hosts: s1
   name: 'restart one server and 2 agents'  
   gather_facts: no
   strategy: free
