@@ -16,6 +16,8 @@
     - assert:
         that:
           - "'Unreachable' not in logs.stdout"
+    - shell: docker network connect bridge {{base_name}} 
+      sudo: yes
           
 - hosts: s1
   name: 'kill consul and docker'  
