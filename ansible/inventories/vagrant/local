@@ -31,13 +31,13 @@ class MachinesInventory(Inventory):
         inventory['_meta']= {'hostvars':  host_definitions}
         inventory.update({
             'consul_servers': {
-                'hosts': ['s1','s2','s3'],
+                'hosts': ['s1'],
 				'vars': {
 					'server_count': 1
 				 }
             },
              'consul_agents': {
-                'hosts': ['a1','a2'],
+                'hosts': [],
 				'vars': {
 					'server_count': 1
 				 }

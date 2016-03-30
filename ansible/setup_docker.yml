@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: s1
   name: gather facts
   max_fail_percentage: 1
   gather_facts: yes

@@ -25,8 +25,9 @@ git clone   -b devel https://github.com/sebi-hgdata/ansible.git
 
 git clone https://github.com/sebi-hgdata/docker_consul_overlay_testing.git
 chmod 600 docker_consul_overlay_testing/ansible/files/keys/test
-cd docker_consul_overlay_testing/scripts
+cd docker_consul_overlay_testing
 git checkout -t origin/one_machine
+cd scripts
 ./update_kernel.sh
 echo "sleep 25 secs"
 sleep 25
