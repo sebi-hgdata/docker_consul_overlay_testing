@@ -28,10 +28,11 @@ script
 end script
 
 post-start script
- #https://github.com/hashicorp/consul/issues/1562  
-   echo "start checking if we have a cluster leader by trying to acquire a lock"       
-   while ! {{consul_home}}/consul lock -n 1 wait-for-consul echo "cluster should be ok because a lock was acquired"; do echo "[UPSTART] wait till can get a lock"; sleep 1; done
+   while ! {{consul_home}}/consul lock -n 1 wait-for-consul echo "lock was acquired"; do echo "[UPSTART] wait till can get a lock"; sleep 1; done
    while ! {{consul_home}}/consul  members|grep alive|wc -l|grep 5; do echo "[UPSTART] wait till all members join"; sleep 1; done
-   
+   echo "start checking if we have a cluster leader by executing a get on an inexistent key" 
+   bash -c 'while [[ "$(curl  http://localhost:8500/v1/kv/inexistent_key 2>/dev/null)" ]]; do echo "[UPSTART] wait till cluster has a leader"; sleep 1; done'   
+  
+   echo "cluster should be ok because it returned: $(curl  http://localhost:8500/v1/kv/inexistent_key 2>/dev/null)"
 end script
 
