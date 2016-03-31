@@ -28,18 +28,9 @@ script
 end script
 
 post-start script
-   echo "start checking if we have a cluster leader by executing a get on an inexistent key"   
-   bash -c "COUNTER=0; \
-   		while ! nc -z localhost 8500; do \
-   			echo 'wait till consul starts listening'; sleep 1; \
-   			let COUNTER=COUNTER+1; \
-			if [  \$COUNTER -gt 10 ]; then \
-				 echo 'consul did not start in 10 secs'; \ 
-				exit 1; \
-			fi \
-		done"       
-   while ! {{consul_home}}/consul lock -n 1 wait-for-consul echo "Consul is up"; do echo "[UPSTART] wait till cluster has a leader"; sleep 1; done
-    #https://github.com/hashicorp/consul/issues/1562
-   echo "cluster should be ok because ia lock was aquired"
+   echo "start checking if we have a cluster leader by etryng to acquire a lock"       
+   while ! {{consul_home}}/consul lock -n 1 wait-for-consul echo "cluster should be ok because a lock was acquired"; do echo "[UPSTART] wait till can get a lock"; sleep 1; done
+   #https://github.com/hashicorp/consul/issues/1562
+   
 end script
 
