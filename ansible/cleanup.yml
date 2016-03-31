@@ -27,6 +27,9 @@
            rm /var/run/docker/netns/*
            rm -rf /var/lib/docker/network
            rm -rf {{consul_home}}/data/*
+           rm -f /var/log/upstart/consul-agent.log
+           rm -f /var/log/upstart/consul-server.log
+           rm -rf /var/log/upstart/docker.log
            service consul-server start &
       sudo: yes
                  

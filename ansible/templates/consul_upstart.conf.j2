@@ -28,9 +28,10 @@ script
 end script
 
 post-start script
-   echo "start checking if we have a cluster leader by etryng to acquire a lock"       
+ #https://github.com/hashicorp/consul/issues/1562  
+   echo "start checking if we have a cluster leader by trying to acquire a lock"       
    while ! {{consul_home}}/consul lock -n 1 wait-for-consul echo "cluster should be ok because a lock was acquired"; do echo "[UPSTART] wait till can get a lock"; sleep 1; done
-   #https://github.com/hashicorp/consul/issues/1562
+   while ! {{consul_home}}/consul  members|grep alive|wc -l|grep 5; do echo "[UPSTART] wait till all members join"; sleep 1; done
    
 end script
 
